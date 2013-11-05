@@ -8,7 +8,10 @@ inbound_services:
 - warmup
 
 handlers:
-- url: /tasks/.*
+- url: /tasks/postoffice
+  script: mail.py
+  
+- url: /tasks/mail
   script: mail.py
   login: admin
   
