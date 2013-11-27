@@ -34,8 +34,6 @@ class PostOfficeHandler(webapp.RequestHandler):
                       queue_name='mail',
                       params={'client' : client, 'formula': formula, 'subject': subject},
                       method='POST')
-    def get(self):
-        self.post()
         
 
 application = webapp.WSGIApplication([('/tasks/mail', MailHandler),
