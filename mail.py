@@ -14,33 +14,28 @@ class MailHandler(webapp.RequestHandler):
     def post(self):
         client = self.request.get("client")
         formula = self.request.get("formula")
-        if 'magicformula' == formula:
-            magic = self._get_magic_formula_result()
-            mail.send_mail(sender="prstcsnpr@gmail.com", to=client, subject='神奇公式', body='', html=magic)
-            logging.info('Mail to %s for MagicFormula' % (client))
-        if 'grahamformula' == formula:
-            graham = self._get_graham_formula_result()
-            mail.send_mail(sender="prstcsnpr@gmail.com", to=client, subject='格雷厄姆公式', body='', html=graham)
-            logging.info('Mail to %s for GrahamFormula' % (client))
-        
-    def _get_magic_formula_result(self):
-        result = urlfetch.fetch(url='http://qmagicformula.appspot.com/magicformula')
+        subject = self.request.get("subject")
+        result = self._get_formula_result(formula)
+        mail.send_mail(sender="prstcsnpr@gmail.com", to=client, subject=subject, body='', html=result)
+        logging.info('Mail to %s for %s' % (client, formula))
+            
+    def _get_formula_result(self, formula):
+        result = urlfetch.fetch(url='http://qmagicformula.appspot.com/'+formula)
         if result.status_code == 200:
             return result.content
         
-    def _get_graham_formula_result(self):
-        result = urlfetch.fetch(url='http://qmagicformula.appspot.com/grahamformula')
-        if result.status_code == 200:
-            return result.content
 
 class PostOfficeHandler(webapp.RequestHandler):
     def post(self):
         client = self.request.get("client")
         formula = self.request.get("formula")
+        subject = self.request.get("subject")
         taskqueue.add(url='/tasks/mail',
                       queue_name='mail',
-                      params={'client' : client, 'formula': formula},
+                      params={'client' : client, 'formula': formula, 'subject': subject},
                       method='POST')
+    def get(self):
+        self.post()
         
 
 application = webapp.WSGIApplication([('/tasks/mail', MailHandler),
