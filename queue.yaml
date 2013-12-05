@@ -3,5 +3,5 @@ queue:
   rate: 5/s
   bucket_size: 5
 - name: mail
-  rate: 4/m
+  rate: 5/m
   bucket_size: 1
